@@ -22,7 +22,9 @@ if "filtered_df" in st.session_state:
                         scale=alt.Scale(
                             domain=['Success', 'Partial Failure', 'Prelaunch Failure', 'Failure'], 
                             range=['blue', 'yellow', 'orange', 'red']
-        )),
+                        ),
+                        legend=alt.Legend(orient='left')
+        ),
         column='Company:N'
     )
 
