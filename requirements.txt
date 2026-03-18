@@ -1,6 +1,6 @@
 geopy==2.4.1
 numpy==2.4.3
-pandas==3.0.1
+pandas==2.3.3
 pydeck==0.9.1
 streamlit==1.55.0
 streamlit_dynamic_filters==0.1.9

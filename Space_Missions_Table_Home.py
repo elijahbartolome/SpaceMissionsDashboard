@@ -3,30 +3,15 @@ import pandas as pd
 import numpy as np
 import datetime as dt
 from streamlit_dynamic_filters import DynamicFilters
-from geopy.geocoders import Nominatim
-from geopy.exc import GeocoderTimedOut, GeocoderServiceError
 
 st.set_page_config(
     page_title="Space Missions Table Home"
 )
-
-geolocator = Nominatim(user_agent="Space_Missions_App", timeout=10)
-
-def get_lat_lon(address):
-    try:
-        location = geolocator.geocode(address)
-        if location:
-            return pd.Series({'Latitude': location.latitude, 'Longitude': location.longitude})
-        else:
-            return pd.Series({'Latitude': None, 'Longitude': None})
-    except (GeocoderTimedOut, GeocoderServiceError) as e:
-        print(f"Error geocoding {address}: {e}")
-        return pd.Series({'Latitude': None, 'Longitude': None})
 # Columns for reference: 
 # Company,Location,Date,Time,Rocket,Mission,RocketStatus,Price,MissionStatus
-df = pd.read_csv("space_missions.csv")
+df = pd.read_csv("space_missions_with_coor.csv")
 df["Date"] = pd.to_datetime(df["Date"]).dt.date
-df[['Latitude', 'Longitude']] = df['Location'].apply(get_lat_lon)
+
 # Filters
 dynamic_filters = DynamicFilters(df, filters=["Company", "Location", "Rocket", "Mission", "RocketStatus", "MissionStatus"])
 dynamic_filters.display_filters(location="sidebar")
@@ -51,7 +36,7 @@ st.dataframe(filtered_df)
 
 # Display Summary Statistics (adjusts based on filters)
 st.write("Summary Statistics")
-summary_stats = filtered_df.describe().rename(index={"count":"Count", "unique":"Number of Unique Values", "top":"Most Common", "freq":"Most Common Value's Frequency"})
+summary_stats = filtered_df.describe(include=object).rename(index={"count":"Count", "unique":"Number of Unique Values", "top":"Most Common", "freq":"Most Common Value's Frequency"})
 st.dataframe(summary_stats, use_container_width=True) 
 
 # Success Rate

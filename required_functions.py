@@ -105,7 +105,7 @@ def main():
     print(getMissionsByDateRange("1957-10-01", "1957-12-31"))
 
     print("4.")
-    print(getTopCompaniesByMissionCount(10000))
+    print(getTopCompaniesByMissionCount(3))
 
     print("5.")
     print(getMissionStatusCount())
