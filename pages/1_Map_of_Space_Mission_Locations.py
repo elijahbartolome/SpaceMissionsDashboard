@@ -14,7 +14,7 @@ st.write("""This map shows the locations of space missions according to the filt
 if "filtered_df" in st.session_state:
 
     df = st.session_state["filtered_df"]
-    groupedDF = df.groupby(["Longitude", "Latitude", "Location"])["Mission"].nunique()
+    groupedDF = df.groupby(["Longitude", "Latitude", "Location"])["Mission"].count()
 
     sortedDF = groupedDF.reset_index(name="Count")
     maxCount = sortedDF["Count"].max()

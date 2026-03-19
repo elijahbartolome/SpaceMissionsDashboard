@@ -12,7 +12,7 @@ st.write("""This graph shows the number of space missions for each company accor
 
 if "filtered_df" in st.session_state:
     df = st.session_state["filtered_df"]
-    groupedDF = df.groupby(["Company", "MissionStatus"])["Mission"].nunique()
+    groupedDF = df.groupby(["Company", "MissionStatus"])["Mission"].count()
     groupedDF = groupedDF.reset_index(name="Mission Count")
 
     chart = alt.Chart(groupedDF).mark_bar().encode(

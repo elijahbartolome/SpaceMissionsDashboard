@@ -8,6 +8,9 @@ pip3 install -r requirements.txt
 
 # Run streamlit to create dashboard in web browser locally
 streamlit run Space_Missions_Table_Home.py
+
+# If the above does not work, try this command
+python3 -m streamlit run Space_Missions_Table_Home.py
 ```
 
 Note that the three visualizations are dependent on the filters in the home page. Thus, using a filter on the home table also modifies the visualizations.
