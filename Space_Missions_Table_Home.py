@@ -41,9 +41,9 @@ st.dataframe(summary_stats, use_container_width=True)
 
 # Success Rate
 st.write("Success Rate")
-numMissions = len(filtered_df)
+numMissions = len(filtered_df["Mission"].unique())
 if numMissions == 0:
     st.write(0.0)
 else:
-    numSuccess = len(filtered_df[filtered_df["MissionStatus"] == "Success"])
+    numSuccess = len(filtered_df[filtered_df["MissionStatus"] == "Success"]["Mission"].unique())
     st.write(round((numSuccess/numMissions) * 100, 2))

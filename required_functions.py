@@ -6,16 +6,16 @@ df = pd.read_csv("space_missions.csv")
 
 @validate_call
 def getMissionCountByCompany(companyName: str) -> int:
-    return len(df[df["Company"] == companyName])
+    return len(df[df["Company"] == companyName]["Mission"].unique())
 
 @validate_call
 def getSuccessRate(companyName: str) -> float:
     companyDF = df[df["Company"] == companyName]
-    numMissions = len(companyDF)
+    numMissions = len(companyDF["Mission"].unique())
     if numMissions == 0:
         return 0.0
     
-    numSuccess = len(companyDF[companyDF["MissionStatus"] == "Success"])
+    numSuccess = len(companyDF[companyDF["MissionStatus"] == "Success"]["Mission"].unique())
 
     # Round to two decimal places as a percentage
     return round((numSuccess/numMissions) * 100, 2)
@@ -34,9 +34,9 @@ def getMissionsByDateRange(startDate: str, endDate: str) -> list:
 
     filteredDF = df[df["Date"].between(start, end, inclusive="both")]
 
-    sortedMissions = filteredDF.sort_values(by="Date")["Mission"]
+    sortedMissions = filteredDF.sort_values(by="Date")["Mission"].unique()
 
-    return sortedMissions.to_list()
+    return list(sortedMissions)
 
 @validate_call
 def getTopCompaniesByMissionCount(n: int) -> list:
@@ -44,8 +44,7 @@ def getTopCompaniesByMissionCount(n: int) -> list:
         raise ValueError("Invalid n. Must be equal or greater than 0.")
     
     # Group by Company with Mission Count Aggregate
-    groupedDF = df.groupby("Company")["Mission"].count()
-
+    groupedDF = df.groupby("Company")["Mission"].nunique()
     # Sort by Mission count then Company alphabetically
     sortedDF = groupedDF.reset_index(name="Count")
     sortedDF = sortedDF.sort_values(by=["Count", "Company"], ascending=[False, True])
@@ -56,15 +55,16 @@ def getTopCompaniesByMissionCount(n: int) -> list:
 
 @validate_call
 def getMissionStatusCount() -> dict:
-    groupedDF = df.groupby("MissionStatus")["MissionStatus"].count()
+    groupedDF = df.groupby("MissionStatus")["Mission"].unique().reset_index()
+    groupedDF["count"] = groupedDF["Mission"].apply(len)
 
-    return groupedDF.to_dict()
+    return groupedDF.set_index("MissionStatus")["count"].to_dict()
 
 @validate_call
 def getMissionsByYear(year: int) -> int:
     df["Year"] = pd.to_datetime(df["Date"]).dt.year
 
-    groupedDF = df.groupby("Year")["Mission"].count()
+    groupedDF = df.groupby("Year")["Mission"].nunique()
 
     return groupedDF[year]
 
@@ -84,7 +84,7 @@ def getAverageMissionsPerYear(startYear: int, endYear: int) -> float:
         raise ValueError("startYear must be less or equal to endYear")
     df["Year"] = pd.to_datetime(df["Date"]).dt.year
 
-    groupedDF = df.groupby("Year")["Mission"].count()
+    groupedDF = df.groupby(["Year", "Mission"])["Mission"].nunique()
     groupedDF = groupedDF.reset_index(name="Count")
     
     filteredDF = groupedDF[groupedDF["Year"].between(startYear, endYear, inclusive="both")]

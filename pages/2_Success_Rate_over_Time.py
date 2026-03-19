@@ -19,7 +19,7 @@ if "filtered_df" in st.session_state:
 
     df = st.session_state["filtered_df"]
     df["Year"] = pd.to_datetime(df["Date"]).dt.year
-    groupedDF = df.groupby(["Year", "MissionStatus"])["Mission"].count()
+    groupedDF = df.groupby(["Year", "MissionStatus"])["Mission"].nunique()
     groupedDF = groupedDF.reset_index(name="Count")
     
     successDF = groupedDF.groupby("Year").apply(success_sum)
