@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import datetime as dt
+from datetime import time
 from streamlit_dynamic_filters import DynamicFilters
 
 st.set_page_config(
@@ -11,6 +12,8 @@ st.set_page_config(
 # Company,Location,Date,Time,Rocket,Mission,RocketStatus,Price,MissionStatus
 df = pd.read_csv("space_missions_with_coor.csv")
 df["Date"] = pd.to_datetime(df["Date"]).dt.date
+df["Price"] = df["Price"].str.replace(',', '').astype(float)
+df["Time"] = pd.to_datetime(df["Time"]).dt.time
 
 # Filters
 dynamic_filters = DynamicFilters(df, filters=["Company", "Location", "Rocket", "Mission", "RocketStatus", "MissionStatus"])
@@ -26,6 +29,13 @@ try:
     filtered_df = filtered_df.loc[mask]
 except:
     pass
+
+# Time Filters
+range = st.sidebar.slider(
+    "Select a time range", value=(time(00, 00), time(23, 59))
+)
+mask = (filtered_df["Time"] >= range[0]) & (filtered_df["Time"] <= range[1])
+filtered_df = filtered_df.loc[mask]
 
 # Save filtered dataframe for visualizations on other pages
 st.session_state["filtered_df"] = filtered_df
